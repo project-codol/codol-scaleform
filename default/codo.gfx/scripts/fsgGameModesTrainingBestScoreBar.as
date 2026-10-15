@@ -1,0 +1,15 @@
+package
+{
+   import fsg.shared.widgets.GameModesTrainingBestScoreBar;
+   
+   [Embed(source="/_assets/assets.swf", symbol="symbol2713")]
+   public dynamic class fsgGameModesTrainingBestScoreBar extends GameModesTrainingBestScoreBar
+   {
+      
+      public function fsgGameModesTrainingBestScoreBar()
+      {
+         super();
+      }
+   }
+}
+

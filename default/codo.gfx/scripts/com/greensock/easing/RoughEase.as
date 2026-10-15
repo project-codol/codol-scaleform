@@ -1,0 +1,178 @@
+package com.greensock.easing
+{
+   public class RoughEase
+   {
+      
+      private static var _lookup:Object = {};
+      
+      private static var _count:uint = 0;
+      
+      private var _name:String;
+      
+      private var _first:EasePoint;
+      
+      private var _last:EasePoint;
+      
+      public function RoughEase(strength:Number = 1, points:uint = 20, restrictMaxAndMin:Boolean = false, templateEase:Function = null, taper:String = "none", randomize:Boolean = true, name:String = "")
+      {
+         var x:Number = NaN;
+         var y:Number = NaN;
+         var bump:Number = NaN;
+         var invX:Number = NaN;
+         var obj:Object = null;
+         super();
+         if(name == "")
+         {
+            this._name = "roughEase" + _count++;
+         }
+         else
+         {
+            this._name = name;
+            _lookup[this._name] = this;
+         }
+         if(taper == "" || taper == null)
+         {
+            taper = "none";
+         }
+         var a:Array = [];
+         var cnt:int = 0;
+         var i:int = int(points);
+         while(Boolean(i--))
+         {
+            x = randomize ? Math.random() : 1 / points * i;
+            y = templateEase != null ? Number(templateEase(x,0,1,1)) : x;
+            if(taper == "none")
+            {
+               bump = 0.4 * strength;
+            }
+            else if(taper == "out")
+            {
+               invX = 1 - x;
+               bump = invX * invX * strength * 0.4;
+            }
+            else
+            {
+               bump = x * x * strength * 0.4;
+            }
+            if(randomize)
+            {
+               y += Math.random() * bump - bump * 0.5;
+            }
+            else if(Boolean(i % 2))
+            {
+               y += bump * 0.5;
+            }
+            else
+            {
+               y -= bump * 0.5;
+            }
+            if(restrictMaxAndMin)
+            {
+               if(y > 1)
+               {
+                  y = 1;
+               }
+               else if(y < 0)
+               {
+                  y = 0;
+               }
+            }
+            a[cnt++] = {
+               "x":x,
+               "y":y
+            };
+         }
+         a.sortOn("x",Array.NUMERIC);
+         this._first = this._last = new EasePoint(1,1,null);
+         i = int(points);
+         while(Boolean(i--))
+         {
+            obj = a[i];
+            this._first = new EasePoint(obj.x,obj.y,this._first);
+         }
+         this._first = new EasePoint(0,0,this._first);
+      }
+      
+      public static function create(strength:Number = 1, points:uint = 20, restrictMaxAndMin:Boolean = false, templateEase:Function = null, taper:String = "none", randomize:Boolean = true, name:String = "") : Function
+      {
+         var re:RoughEase = new RoughEase(strength,points,restrictMaxAndMin,templateEase,taper,randomize,name);
+         return re.ease;
+      }
+      
+      public static function byName(name:String) : Function
+      {
+         return _lookup[name].ease;
+      }
+      
+      public function ease(t:Number, b:Number, c:Number, d:Number) : Number
+      {
+         var p:EasePoint = null;
+         var time:Number = t / d;
+         if(time < 0.5)
+         {
+            p = this._first;
+            while(p.time <= time)
+            {
+               p = p.next;
+            }
+            p = p.prev;
+         }
+         else
+         {
+            p = this._last;
+            while(p.time >= time)
+            {
+               p = p.prev;
+            }
+         }
+         return b + (p.value + (time - p.time) / p.gap * p.change) * c;
+      }
+      
+      public function dispose() : void
+      {
+         delete _lookup[this._name];
+      }
+      
+      public function get name() : String
+      {
+         return this._name;
+      }
+      
+      public function set name(value:String) : void
+      {
+         delete _lookup[this._name];
+         this._name = value;
+         _lookup[this._name] = this;
+      }
+   }
+}
+
+class EasePoint
+{
+   
+   public var time:Number;
+   
+   public var gap:Number;
+   
+   public var value:Number;
+   
+   public var change:Number;
+   
+   public var next:EasePoint;
+   
+   public var prev:EasePoint;
+   
+   public function EasePoint(time:Number, value:Number, next:EasePoint)
+   {
+      super();
+      this.time = time;
+      this.value = value;
+      if(Boolean(next))
+      {
+         this.next = next;
+         next.prev = this;
+         this.change = next.value - value;
+         this.gap = next.time - time;
+      }
+   }
+}

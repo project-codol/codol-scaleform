@@ -1,0 +1,21 @@
+package view_gamelobby_fla
+{
+   import flash.display.MovieClip;
+   
+   [Embed(source="/_assets/assets.swf", symbol="symbol4390")]
+   public dynamic class NewLobbyLoadoutMeleeContentSimpleBackground_86 extends MovieClip
+   {
+      
+      public function NewLobbyLoadoutMeleeContentSimpleBackground_86()
+      {
+         super();
+         addFrameScript(0,this.frame1);
+      }
+      
+      internal function frame1() : *
+      {
+         stop();
+      }
+   }
+}
+

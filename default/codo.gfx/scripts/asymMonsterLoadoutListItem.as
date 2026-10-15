@@ -1,0 +1,21 @@
+package
+{
+   import components.asympvp_part.AsymMonsterLoadoutListItem;
+   
+   [Embed(source="/_assets/assets.swf", symbol="symbol6192")]
+   public dynamic class asymMonsterLoadoutListItem extends AsymMonsterLoadoutListItem
+   {
+      
+      public function asymMonsterLoadoutListItem()
+      {
+         super();
+         addFrameScript(0,this.frame1);
+      }
+      
+      internal function frame1() : *
+      {
+         stop();
+      }
+   }
+}
+
